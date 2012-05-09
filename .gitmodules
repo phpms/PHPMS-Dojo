@@ -1,15 +1,6 @@
-[submodule "Anagrams"]
-	path = Anagrams
-	url = git@github.com:agripinoduarte/Anagrams.git
-[submodule "03-2012/agripinoduarte_anagrams"]
-	path = 03-2012/agripinoduarte_anagrams
-	url = git@github.com:agripinoduarte/Anagrams.git
 [submodule "03-2012/agripino_roman_calc"]
 	path = 03-2012/agripino_roman_calc
 	url = git@github.com:agripinoduarte/RomanCalculator.git
 [submodule "04-2012/agripino_anagrams"]
 	path = 04-2012/agripino_anagrams
 	url = git@github.com:agripinoduarte/Anagrams.git
-[submodule "03-2012/cauan_roman_calc"]
-	path = 03-2012/cauan_roman_calc
-	url = git@github.com:agripinoduarte/RomanCalculator.git
