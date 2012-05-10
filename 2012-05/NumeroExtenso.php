@@ -1,86 +1,89 @@
 <?php
 class NumeroExtenso
 {
-	public static function literal($n, $escreveReais = true)
-	{
-		$valor = array(
-			0 => '',
-			1 => 'um',
-			2 => 'dois',
-			3 => 'tres',
-			'quatro',
-			'cinco',
-			'seis',
-			'sete', 'oito', 'nove', 'dez',
-			'onze', 'doze', 'treze', 'quatorze',
-			'quinze', 'dezesseis', 'dezessete',
-			'dezoito', 'dezenove', 'vinte'
-		);
+	public static $irregulares = array(
+		1 => 'um', 'dois', 'três', 'quatro',
+		'cinco', 'seis', 'sete', 'oito',
+		'nove', 'dez', 'onze', 'doze',
+		'treze', 'quatorze', 'quinze', 'dezesseis',
+		'dezessete', 'dezoito', 'dezenove',
+		100 => 'cem',
+		1000 => 'mil'
+	);
 
-		$dezena = array(
-			0 => '',
-			1 => '',2=>'vinte','trinta','quarenta','cinquenta',
-			'sessenta', 'setenta', 'oitenta', 'noventa'
-			);
-		$cem = '100';
-		$centena = array(
-			0 => '',
-			1 => 'cento','duzentos','trezentos',
-			'quatrocentos','quinhentos','seiscentos',
-			'setecentos', 'oitocentos', 'novecentos'
-			);
-		$mil= 'mil';
+	public static $dezenas = array(
+		2 => 'vinte','trinta','quarenta','cinquenta',
+		'sessenta', 'setenta', 'oitenta', 'noventa'
+	);
+
+	public static $centenas = array(
+		1 => 'cento','duzentos','trezentos',
+		'quatrocentos','quinhentos','seiscentos',
+		'setecentos', 'oitocentos', 'novecentos'
+	);
+
+	public static function literal($n)
+	{
+		if($n <= 0)
+			return 'valor inválido';
 
 		$moeda = ' real';
-
-		if ($n <= 0) {
-			return 'valor inválido';
-		}
 
 		if($n > 1)
 			$moeda = ' reais';
 
-		if($n == 100){
-			if($escreveReais)
-				return 'cem'.$moeda;
-			else
-				return 'cem';
-		}
+		$int = $n;
+		if(strpos($n, ',') !== false)
+			list($int, $dec) = explode(',', $n);
 
-		if($n == 1000)
-			return 'mil reais';
+		$literal = self::extenso($int) . $moeda;
 
-		if($n <= 20){
-			if($escreveReais)
-				return $valor[$n] . $moeda ;
-			else
-				return $valor[$n];
-		}
+		if(isset($dec))
+			$literal .= ' e ' . self::extenso($dec) . ' centavos';
 
-		$d = substr($n,-2,1);
-		$u = substr($n,-1,1);
+		return $literal;
+	}
+
+	public static function extenso($int)
+	{
 		$literal = '';
 
-		if(!empty($d))
-			$literal .= $dezena[$d];
-
-		if(!empty($literal) && !empty($u))
-			$literal .= ' e ';
-
-		if(!empty($u))
-			$literal .= $valor[$u];
-
-		if ($n > 100) {
-			$c = substr($n,-3,1);
-			$literal = $centena[$c] . ' e ' . $literal;
+		if(array_key_exists($int, self::$irregulares))
+		{
+			return self::$irregulares[$int];
 		}
 
-		if($n>1000){
-				$m = substr($n,-4,1);
-				$m = intval($n / 1000);
-				$literal= self::literal($m, false)." mil" . $literal;
+		$u = substr($int, -1, 1);
+		if($u > 0) {
+			$literal = self::$irregulares[$u];
 		}
 
-		return $literal . ($escreveReais ? $moeda : '');
+		$d = substr($int, -2, 1);
+		if($int > 19 && isset(self::$dezenas[$d])) {
+			$literal = self::$dezenas[$d] . self::juncao($literal);
+		}
+
+		$c = substr($int, -3, 1);
+		if($int > 100 && isset(self::$centenas[$c])) {
+			$literal = self::$centenas[$c] . self::juncao($literal);
+		}
+
+		if($int > 1000) {
+			$m = substr($int, -4, 1);
+			$m = intval($int / 1000);
+
+			$juncao = ' ';
+			if(empty($c))
+				$juncao = ' e ';
+
+			$literal = self::extenso($m) . ' mil' . (empty($literal) ? '' : $juncao . $literal);
+		}
+
+		return $literal;
+	}
+
+	public static function juncao($corrente)
+	{
+		return (empty($corrente) ? '' : ' e ' . $corrente);
 	}
 }
